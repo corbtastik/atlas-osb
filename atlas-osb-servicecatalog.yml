@@ -1,0 +1,12 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceBroker
+metadata:
+  name: atlas-osb
+  namespace: atlas
+spec:
+  url: http://atlas-osb.atlas
+  authInfo:
+    basic:
+      secretRef:
+        name: atlas-osb-auth
+        namespace: atlas
