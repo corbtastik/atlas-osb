@@ -1,6 +1,6 @@
 # Atlas OSB on K8s
 
-A quick sample of deploying Atlas OSB so we can provision MongoDB databases in Atlas from K8s.
+A quick sample of deploying Atlas OSB and provisioning MongoDB databases in Atlas from K8s.
 
 1. You'll need a Kubernetes Cluster (minikube should work)
 1. An account on [Atlas](https://cloud.mongodb.com)
