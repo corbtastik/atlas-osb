@@ -1,12 +1,12 @@
 apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ServiceInstance
 metadata:
-  name: atlas-m30-replicaset
+  name: atlas-m10-azure
   namespace: atlas
 spec:
-  serviceClassExternalName: mongodb-atlas-aws
-  servicePlanExternalName: M30
+  serviceClassExternalName: mongodb-atlas-azure
+  servicePlanExternalName: M10
   parameters:
     cluster:
       providerSettings:
-        regionName: US_WEST_2
+        regionName: US_EAST_2

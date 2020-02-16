@@ -1,11 +1,11 @@
 apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ServiceInstance
 metadata:
-  name: atlas-m20-replicaset
+  name: atlas-m10-aws
   namespace: atlas
 spec:
   serviceClassExternalName: mongodb-atlas-aws
-  servicePlanExternalName: M20
+  servicePlanExternalName: M10
   parameters:
     cluster:
       providerSettings:
