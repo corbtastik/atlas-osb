@@ -12,11 +12,11 @@ Whatcha need
 
 The sample is broken down into 3 parts.
 
-1. Install Service Catalog and the Atlas OSB
-1. Configure Atlas OSB with an Atlas API Key
+1. Deploy Service Catalog and Atlas OSB
+1. Configure Atlas OSB
 1. Provision MongoDB Service Instances on Atlas
 
-## Install Service Catalog and the Atlas OSB
+## Deploy Service Catalog and Atlas OSB
 
 `./install.sh`
 
@@ -39,7 +39,7 @@ kubectl -n atlas get services --show-labels
 kubectl -n atlas get pods --show-labels
 ```
 
-## Configure Atlas OSB with an Atlas API Key
+## Configure Atlas OSB
 
 Create an API Key for the Atlas OSB to use.
 
@@ -76,7 +76,78 @@ kubectl apply -f atlas-apikey.yml
 kubectl apply -f atlas-osb-servicecatalog.yml
 ```
 
-Now our Atlas OSB is configured to call the Atlas API and in the Service Catalog.
+At this point the Atlas OSB
+
+* Is registered as a Service Broker in K8s
+* Can call Atlas
+
+```bash
+# internal dns of Service Broker, broker-name.namespace
+kubectl -n atlas get servicebroker
+NAME        URL                      STATUS   AGE
+atlas-osb   http://atlas-osb.atlas   Ready    25s
+
+# can call Atlas and get Service Plans
+kubectl -n atlas get serviceplans
+# using servicecatalog cli
+svcat marketplace -n atlas
+        CLASS             PLANS               DESCRIPTION             
++----------------------+-----------+----------------------------------+
+ mongodb-atlas-aws      M10         Atlas cluster hosted on "AWS"     
+                        M100                                          
+                        M140                                      
+```
+
+## Provision MongoDB Service Instances on Atlas
+
+Now we're ready to bake some MongoDB with the Atlas OSB :cake:.  Let's provision an m10 on each provider.
+
+Make sure to configure each Service Instance with a valid `serviceClassExternalName` and `servicePlanExternalName` from `svcat marketplace -n atlas`.
+
+Atlas Region Mappings
+* [AWS](https://docs.atlas.mongodb.com/reference/amazon-aws/)
+* [GCP](https://docs.atlas.mongodb.com/reference/google-gcp/)
+* [Azure](https://docs.atlas.mongodb.com/reference/microsoft-azure/)
+
+```yaml
+# atlas-m10-gcp.yml ServiceInstance
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceInstance
+metadata:
+  name: atlas-m10-gcp
+  namespace: atlas
+spec:
+  serviceClassExternalName: mongodb-atlas-gcp
+  servicePlanExternalName: M10
+  parameters:
+    cluster:
+      providerSettings:
+        regionName: CENTRAL_US
+```
+
+Run `./provision.sh`
+
+```bash
+# provision 3 m10 service-instances across the big 3
+kubectl apply -f atlas-m10-aws.yml
+kubectl apply -f atlas-m10-azure.yml
+kubectl apply -f atlas-m10-gcp.yml
+```
+
+You should see 3 m10s starting in Atlas :trophy:
+
+```bash
+kubectl -n atlas get serviceinstances        
+NAME              CLASS                              PLAN   STATUS         AGE
+atlas-m10-aws     ServiceClass/mongodb-atlas-aws     M10    Provisioning   37s
+atlas-m10-azure   ServiceClass/mongodb-atlas-azure   M10    Provisioning   37s
+atlas-m10-gcp     ServiceClass/mongodb-atlas-gcp     M10    Provisioning   37s
+```
+
+
+## Teardown
+
+Save a tree...run `./teardown.sh` to delete all Service Instances and uninstall the Atlas OSB.
 
 ## References
 
