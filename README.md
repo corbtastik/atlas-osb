@@ -76,7 +76,7 @@ kubectl apply -f atlas-apikey.yml
 kubectl apply -f atlas-osb-servicecatalog.yml
 ```
 
-The Atlas OSB is configured to
+Now our Atlas OSB is configured to call the Atlas API and in the Service Catalog.
 
 ## References
 
