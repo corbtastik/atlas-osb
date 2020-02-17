@@ -21,6 +21,7 @@ The sample is broken down into 3 parts.
 `./install.sh`
 
 ```bash
+#!/bin/bash
 # service catalog
 kubectl create ns catalog
 helm repo add svc-cat https://svc-catalog-charts.storage.googleapis.com
@@ -40,20 +41,42 @@ kubectl -n atlas get pods --show-labels
 
 ## Configure Atlas OSB with an Atlas API Key
 
-Create an Atlas API Key for the Atlas OSB to use.
+Create an API Key for the Atlas OSB to use.
 
-Atlas > Project > Access Management > API Key
+* Atlas > Project > Access Management > API Key
+* Whitelist your IP (on full K8s whitelist worker nodes)
 
 <img src="/assets/apikey.png" width="75%">  
 
+---
 
-Make
+Configure the `PRIVATE-KEY`, `PUBLIC-KEY` and `PROJECT-ID` in `atlas-apikey.yml`.
+* Your ProjectId is @ Atlas > Project > Settings.
+
+```yaml
+# atlas-apikey.yml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: atlas-osb-auth
+  namespace: atlas
+type: Opaque
+stringData:
+  username: PUBLIC-KEY@PROJECT-ID
+  password: PRIVATE-KEY
+```
+
+Once that's in-place run
 
 `./configure.sh`
 
-```yaml
-
+```bash
+#!/bin/bash
+kubectl apply -f atlas-apikey.yml
+kubectl apply -f atlas-osb-servicecatalog.yml
 ```
+
+The Atlas OSB is configured to
 
 ## References
 
