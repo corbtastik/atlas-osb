@@ -18,10 +18,11 @@ The sample is broken down into 3 parts.
 
 ## Deploy Service Catalog and Atlas OSB
 
-`./install.sh`
+Run `./install.sh`
 
 ```bash
 #!/bin/bash
+# install.sh
 # service catalog
 kubectl create ns catalog
 helm repo add svc-cat https://svc-catalog-charts.storage.googleapis.com
@@ -45,13 +46,9 @@ Create an API Key for the Atlas OSB to use.
 
 * Atlas > Project > Access Management > API Key
 * Whitelist your IP (on full K8s whitelist worker nodes)
+* Your ProjectId is @ Atlas > Project > Settings
+* Configure the `PRIVATE-KEY`, `PUBLIC-KEY` and `PROJECT-ID` in `atlas-apikey.yml`.
 
-<img src="/assets/apikey.png" width="75%">  
-
----
-
-Configure the `PRIVATE-KEY`, `PUBLIC-KEY` and `PROJECT-ID` in `atlas-apikey.yml`.
-* Your ProjectId is @ Atlas > Project > Settings.
 
 ```yaml
 # atlas-apikey.yml
@@ -62,16 +59,17 @@ metadata:
   namespace: atlas
 type: Opaque
 stringData:
-  username: PUBLIC-KEY@PROJECT-ID
-  password: PRIVATE-KEY
+  username: PUBLIC-KEY@PROJECT-ID #replace
+  password: PRIVATE-KEY           #replace
 ```
 
-Once that's in-place run
+Once that's in-place...
 
-`./configure.sh`
+Run `./configure.sh`
 
 ```bash
 #!/bin/bash
+# configure.sh
 kubectl apply -f atlas-apikey.yml
 kubectl apply -f atlas-osb-servicecatalog.yml
 ```
@@ -128,13 +126,14 @@ spec:
 Run `./provision.sh`
 
 ```bash
-# provision 3 m10 service-instances across the big 3
+#!/bin/bash
+# provision.sh
 kubectl apply -f atlas-m10-aws.yml
 kubectl apply -f atlas-m10-azure.yml
 kubectl apply -f atlas-m10-gcp.yml
 ```
 
-You should see 3 m10s starting in Atlas :trophy:
+You should see 3 m10s starting in Atlas :eyes:
 
 ```bash
 kubectl -n atlas get serviceinstances        
@@ -143,6 +142,8 @@ atlas-m10-aws     ServiceClass/mongodb-atlas-aws     M10    Provisioning   37s
 atlas-m10-azure   ServiceClass/mongodb-atlas-azure   M10    Provisioning   37s
 atlas-m10-gcp     ServiceClass/mongodb-atlas-gcp     M10    Provisioning   37s
 ```
+
+
 
 
 ## Teardown
