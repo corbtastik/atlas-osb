@@ -143,9 +143,6 @@ atlas-m10-azure   ServiceClass/mongodb-atlas-azure   M10    Provisioning   37s
 atlas-m10-gcp     ServiceClass/mongodb-atlas-gcp     M10    Provisioning   37s
 ```
 
-
-
-
 ## Teardown
 
 Save a tree...run `./teardown.sh` to delete all Service Instances and uninstall the Atlas OSB.
@@ -153,6 +150,7 @@ Save a tree...run `./teardown.sh` to delete all Service Instances and uninstall 
 ## References
 
 1. [Atlas OSB Install Docs](https://docs.mongodb.com/atlas-open-service-broker/current/installation/)
+1. [Kubernetes, Helm and Service Catalog Chart wackiness](https://stackoverflow.com/questions/58481850/no-matches-for-kind-deployment-in-version-extensions-v1beta1)
 
 
 ## Downloads

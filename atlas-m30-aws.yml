@@ -1,0 +1,19 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceInstance
+metadata:
+  name: atlas-m30-aws
+  namespace: atlas
+spec:
+  serviceClassExternalName: mongodb-atlas-aws
+  servicePlanExternalName: M30
+  parameters:
+    cluster:
+      labels:
+        - key: name
+          value: atlas-osb-demo
+        - key: project
+          value: 'Baking MongoDB with AtlasOSB'
+        - key: version
+          value: 1.0.0.SNAP
+      providerSettings:
+        regionName: US_WEST_2
