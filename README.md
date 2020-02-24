@@ -8,7 +8,7 @@ Whatcha need
 
 1. A Kubernetes Cluster (minikube should work)
 1. An account on [Atlas](https://cloud.mongodb.com)
-1. Tools - kubectl, helm, svcat - See [Downloads for versions](#/downloads)
+1. Tools - kubectl, helm, svcat - See [Downloads for versions](#downloads)
 
 The sample is broken down into 5 parts.
 
