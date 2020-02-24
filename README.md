@@ -16,7 +16,7 @@ The sample is broken down into 5 parts.
 1. [Deploy Service Catalog and Atlas OSB](#deploy-service-catalog-and-atlas-osb)
 1. [Configure Atlas OSB with API Key](#configure-atlas-osb-with-api-key)
 1. [Provision MongoDB Service Instances on Atlas](#provision-mongodb-service-instances-on-atlas)
-1. [Connect to MongoDB Service Instance](#connect-to-service-instance)
+1. [Connect to MongoDB Service Instance](#connect-to-mongodb-service-instance)
 
 ## Start K8s cluster
 
