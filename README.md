@@ -21,7 +21,7 @@ The sample is broken down into 6 parts.
 
 ## Start K8s cluster
 
-Feel free to use K8s on the public cloud or simply use Minikube which is perfect for this sample. Configure cpu, memory and vm-driver for your tastes and start Minikube using the `start.sh` script.
+Feel free to use K8s on the public cloud or simply use Minikube which is perfect for this sample.
 
 **Note:** If you're willing to pay a little money then I'd highly recommend buying a license for [VMware Fusion](https://www.vmware.com/products/fusion/fusion-evaluation.html) which will vastly improve your local devOps experience running VMs.  Virtualbox will work but as one great devOps professional said "Virtualbox is for little kids and VMware Fusion is for bigger kids with a job"...I'm paraphrasing but that's close.
 
