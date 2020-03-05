@@ -2,7 +2,7 @@
 
 Do you like cloud-native automation (*I know you do, you devOps diva*)? Bespoke processes and manual provisioning gotcha a little melancholy?  Well turn that frown upside down buttercup, things are looking up :sunny:
 
-In this sample we'll take a no-fluff looksy at machining MongoDB clusters with the [Atlas Open Service Broker](https://github.com/mongodb/mongodb-atlas-service-broker) on Kubernetes.  This is one of three ways to integrate with MongoDB [Atlas](https://www.mongodb.com/cloud/atlas) to automate managing Clusters.  The other two are [Terraform](https://www.terraform.io/docs/providers/mongodbatlas/index.html) and the native [Atlas API](https://docs.atlas.mongodb.com/api/).  We'll grok those in another post on-down the road.
+In this sample we'll take a looksy at machining MongoDB clusters with the [Atlas Open Service Broker](https://github.com/mongodb/mongodb-atlas-service-broker) on Kubernetes.  This is one of three ways to integrate with MongoDB [Atlas](https://www.mongodb.com/cloud/atlas) to automate managing Clusters.  The other two are [Terraform](https://www.terraform.io/docs/providers/mongodbatlas/index.html) and the native [Atlas API](https://docs.atlas.mongodb.com/api/).  We'll grok those in another post on-down the road.
 
 Whatcha need
 
