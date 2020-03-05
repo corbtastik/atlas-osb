@@ -1,3 +1,4 @@
+# Atlas API Key as a K8s Secret
 apiVersion: v1
 kind: Secret
 metadata:
@@ -5,5 +6,5 @@ metadata:
   namespace: atlas
 type: Opaque
 stringData:
-  username: <PUBLIC-KEY>@<PROJECT-ID>
-  password: <PRIVATE-KEY>
+  username: PUBLIC-KEY@PROJECT-ID #replace
+  password: PRIVATE-KEY           #replace

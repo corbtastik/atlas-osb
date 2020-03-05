@@ -8,5 +8,6 @@ spec:
   servicePlanExternalName: M10
   parameters:
     cluster:
+      mongoDBMajorVersion: "4.2"
       providerSettings:
         regionName: CENTRAL_US

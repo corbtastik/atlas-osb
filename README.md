@@ -1,67 +1,65 @@
 # Atlas OSB and MongoDB
 
-A short sample using the Atlas Open Service Broker on K8s to provision MongoDB databases in Atlas.
+Do you like cloud-native automation (*I know you do, you devOps diva*)? Bespoke processes and manual provisioning gotcha a little melancholy?  Well turn that frown upside down buttercup, things are looking up :sunny:
 
-K8s automation and "always on" [Atlas](https://www.mongodb.com/cloud/atlas) :sunglasses:
+In this sample we'll take a no-fluff looksy at machining MongoDB clusters with the [Atlas Open Service Broker](https://github.com/mongodb/mongodb-atlas-service-broker) on Kubernetes.  This is one of three ways to integrate with MongoDB [Atlas](https://www.mongodb.com/cloud/atlas) to automate managing Clusters.  The other two are [Terraform](https://www.terraform.io/docs/providers/mongodbatlas/index.html) and the native [Atlas API](https://docs.atlas.mongodb.com/api/).  We'll grok those in another post on-down the road.
 
 Whatcha need
 
-1. A Kubernetes Cluster (minikube should work)
+1. A Kubernetes Cluster (Minikube should work)
 1. An account on [Atlas](https://cloud.mongodb.com)
 1. Tools - kubectl, helm, svcat - See [Downloads for versions](#downloads)
 
-The sample is broken down into 5 parts.
+The sample is broken down into 6 parts.
 
 1. [Start K8s cluster](#start-k8s-cluster)
-1. [Deploy Service Catalog and Atlas OSB](#deploy-service-catalog-and-atlas-osb)
-1. [Configure Atlas OSB with API Key](#configure-atlas-osb-with-api-key)
+1. [Deploy Service Catalog](#deploy-service-catalog)
+1. [Configure Atlas API Key](#configure-atlas-api-key)
+1. [Deploy Atlas OSB](#deploy-atlas-osb)
 1. [Provision MongoDB Service Instances on Atlas](#provision-mongodb-service-instances-on-atlas)
 1. [Connect to MongoDB Service Instance](#connect-to-mongodb-service-instance)
 
 ## Start K8s cluster
 
+Feel free to use K8s on the public cloud or simply use Minikube which is perfect for this sample. Configure cpu, memory and vm-driver for your tastes and start Minikube using the `start.sh` script.
+
+**Note:** If you're willing to pay a little money then I'd highly recommend buying a license for [VMware Fusion](https://www.vmware.com/products/fusion/fusion-evaluation.html) which will vastly improve your local devOps experience running VMs.  Virtualbox will work but as one great devOps professional said "Virtualbox is for little kids and VMware Fusion is for grown-ups"...I'm paraphrasing but that's close.
+
 Configure cpu, memory and vm-driver for your tastes and start Minikube.
 
 ```bash
 # start.sh
+# use --vm-driver=vmware if you have VMware Fusion installed
 minikube start --vm-driver=virtualbox \
   --cpus=4 \
   --memory=8192 \
   --kubernetes-version=1.15.10
 ```
 
-## Deploy Service Catalog and Atlas OSB
+## Deploy Service Catalog
 
-Run :runner: `./install.sh`
+Our K8s Cluster needs a Service Catalog installed so we can thumb through it for MongoDB Atlas plans in a bit.  Run the commands below to install a Service Catalog using Helm...note we're deploying it into the catalog namespace.
 
 ```bash
 # service catalog
 kubectl create ns catalog
 helm repo add svc-cat https://svc-catalog-charts.storage.googleapis.com
 helm install catalog svc-cat/catalog --namespace catalog
-# atlas osb
-kubectl create ns atlas
-kubectl apply -f atlas-osb-deployment.yml
-# inspect atlas-osb deployment
-kubectl -n atlas get deployment atlas-osb --show-labels
-kubectl -n atlas get services --show-labels
-kubectl -n atlas get pods --show-labels
 ```
 
-Wait until you :eyes: the Atlas OSB Pod running in the `atlas` namespace before continuing.
+## Configure Atlas API Key
 
-## Configure Atlas OSB with API Key
-
-Create an API Key for the Atlas OSB to use.
+Ok let's get a bit of manual config taken care of.  Head over to Atlas and generate an API Key for the Atlas Service Broker to use.
 
 * Atlas > Project > Access Management > API Key
-* Whitelist your IP (on full K8s whitelist worker nodes)
+* Whitelist your IP on the API Key (on full K8s whitelist worker nodes)
 * Your ProjectId is @ Atlas > Project > Settings
 * Configure the `PRIVATE-KEY`, `PUBLIC-KEY` and `PROJECT-ID` in `atlas-apikey.yml`.
 
 
 ```yaml
 # atlas-apikey.yml
+# Atlas API Key as a K8s Secret
 apiVersion: v1
 kind: Secret
 metadata:
@@ -73,22 +71,32 @@ stringData:
   password: PRIVATE-KEY           #replace
 ```
 
-Once that's in-place...
+Once that's in-place we're cooking with corn oil :corn:...that's just corny.
 
-Run :runner: `./configure.sh`
+## Deploy Atlas OSB
 
-To configure your API Key with the Atlas OSB and register it as a namespace scoped Service Broker.
+Run :runner: the `./install.sh` script to deploy
+
+1. The Atlas OSB application
+1. An internal ClusterIP exposing ^^^ on port 4000 internally
+1. A Secret that contains the before mentioned Atlas API Key
+1. Last but not least the Service Broker for the Catalog
 
 ```bash
-# configure.sh
-kubectl apply -f atlas-apikey.yml
-kubectl apply -f atlas-osb-servicecatalog.yml
+# install.sh
+# atlas osb
+kubectl create ns atlas
+kubectl apply -f atlas-api-key.yml
+kubectl apply -f atlas-osb-deployment.yml
+# inspect atlas-osb deployment
+kubectl -n atlas get deployment atlas-osb --show-labels
+kubectl -n atlas get services --show-labels
+kubectl -n atlas get pods --show-labels
 ```
 
-At this point the Atlas OSB
+Wait until you :eyes: the Atlas OSB Pod running in the `atlas` namespace before continuing.
 
-* Is registered as a Service Broker in the `atlas` namespace
-* Configured to call Atlas API
+Grok the Broker.
 
 ```bash
 # internal dns of Service Broker, broker-name.namespace
@@ -109,11 +117,14 @@ svcat marketplace -n atlas
 
 ## Provision MongoDB Service Instances on Atlas
 
-Now we're ready to bake :cake: some MongoDB with the Atlas OSB.  Let's provision an M10 on each provider.
+At this point the Atlas OSB is ready to do some mongo baking :cake:...sahweet.  Let's provision an M10 on each provider.
 
-Make sure to configure each Service Instance with a valid `serviceClassExternalName` and `servicePlanExternalName` from `svcat marketplace -n atlas`.
+Make sure to configure each Service Instance with valid config from `svcat marketplace -n atlas`.
 
-Atlas regionName(s) are named different than public cloud providers.
+* `serviceClassExternalName` - mongodb-atlas-aws...gpc, azure
+* `servicePlanExternalName` - atlas plan name, M10...etc.
+
+**Note:** Atlas regionName(s) are named different than public cloud providers.
 
 * Mappings
   * [AWS](https://docs.atlas.mongodb.com/reference/amazon-aws/)
@@ -121,6 +132,8 @@ Atlas regionName(s) are named different than public cloud providers.
   * [Azure](https://docs.atlas.mongodb.com/reference/microsoft-azure/)
 
 The full list of supported cluster properties is given in the [Create Cluster request body of the Atlas API](https://docs.atlas.mongodb.com/reference/api/clusters-create-one/#request-body-parameters).
+
+Sample Service Instance deployment.
 
 ```yaml
 # atlas-m10-gcp.yml ServiceInstance
@@ -134,14 +147,14 @@ spec:
   servicePlanExternalName: M10
   parameters:
     cluster:
+      mongoDBMajorVersion: 4.2
       providerSettings:
         regionName: CENTRAL_US
 ```
 
-Run :runner: `./provision.sh`
+Deploy each Service Instance and kickback with a snack :candy: for several minutes while Atlas brings our clusters online.
 
 ```bash
-# provision.sh
 kubectl apply -f cluster-configs/atlas-m10-aws.yml
 kubectl apply -f cluster-configs/atlas-m10-azure.yml
 kubectl apply -f cluster-configs/atlas-m10-gcp.yml
@@ -169,9 +182,9 @@ For convenience there's an sample ServiceBinding `atlas-servicebinding.yml` for 
 
 Pick up here :truck:
 
-## Teardown
+## Uninstall
 
-Save a tree...run `./teardown.sh` to delete all Service Instances and uninstall the Atlas OSB.
+Save a tree...run `./uninstall.sh` to delete all Service Instances, remove the Atlas OSB and Service Catalog.
 
 ## Downloads
 
