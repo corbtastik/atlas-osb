@@ -181,6 +181,8 @@ At this point you should have 3 M10(s) running and now it's time to connect via 
 1. Retrieve the Atlas connection deets for each user
 1. Connect to the MongoDB cluster with the mongo shell, Compass or an app
 
+### Create Service Bindings
+
 For convenience there's sample ServiceBindings in `./cluster-configs` for each M10 Service Instance, pre-configured with a Service Instance user...for example `atlas-m10-aws-user1`.
 
 ```bash
@@ -195,6 +197,8 @@ kubectl -n atlas describe servicebindings
 # view details of service bindings with svcat, notice "Secret Data"
 svcat describe binding atlas-m10-gcp-user1 -n atlas
 ```
+
+### Retrieve Atlas Connection Details
 
 Each Service Binding includes a [base64 encoded Kubernetes Secret](https://kubernetes.io/docs/concepts/configuration/secret/) containing the Cluster uri, username and password.  You can view the encoded secret using kubectl.
 
@@ -213,10 +217,52 @@ metadata:
 type: Opaque
 ```
 
+### Connect to MongoDB
+
+We'll need to decode the Secret before we can use it to connect to our running MongoDB cluster.  Most Operating Systems include a `base64` command that can be used to decode the Secret.
+
+```bash
+# decode uri
+echo 'bW9uZ29kYitzcnY6Ly9hZGExNjA4Ny02MTUzLTExZWEtOWY4OC1uZWdhZS5nY3AubW9uZ29kYi5uZXQ=' | base64 --decode
+# decode username
+echo 'NTAwMGZkMTktNjE1OC0xMWVhLTlmODgtMDI0MmFjMTEwMDA1' | base64 --decode
+# decode password
+echo 'TzAxVXcxUGRpMlFUOUlaMTNjRFV3THJKdXd2UzJGeWJwazBKV2tCNWJkVT0=' | base64 --decode
+```
+
+Now we have everything required to connect with the Mongo Shell, Compass or an App.
+
+```bash
+mongo mongodb+srv://ada16087-6153-11ea-9f88-negae.gcp.mongodb.net --username 5000fd19-6158-11ea-9f88-0242ac110005
+MongoDB shell version v4.2.3
+Enter password:
+connecting to: mongodb://ada16087-6153-11ea-9f8...blah blah blah
+MongoDB server version: 4.2.3
+MongoDB Enterprise shard-0:PRIMARY> use todosdb
+MongoDB Enterprise shard-0:PRIMARY> db.todos.insertOne({title: "Start K8s Cluster", complete: true})
+MongoDB Enterprise shard-0:PRIMARY> db.todos.insertOne({title: "Deploy Service Catalog", complete: true})
+MongoDB Enterprise shard-0:PRIMARY> db.todos.insertOne({title: "Configure Atlas API Key", complete: true})
+MongoDB Enterprise shard-0:PRIMARY> db.todos.insertOne({title: "Deploy Atlas OSB", complete: true})
+MongoDB Enterprise shard-0:PRIMARY> db.todos.insertOne({title: "Provision MongoDB Service Instances on Atlas", complete: true})
+MongoDB Enterprise shard-0:PRIMARY> db.todos.insertOne({title: "Connect to MongoDB Service Instance", complete: true})
+MongoDB Enterprise shard-0:PRIMARY> db.todos.find({}, {_id:0})
+{ "title" : "Start K8s Cluster", "complete" : true }
+{ "title" : "Deploy Service Catalog", "complete" : true }
+{ "title" : "Configure Atlas API Key", "complete" : true }
+{ "title" : "Deploy Atlas OSB", "complete" : true }
+{ "title" : "Provision MongoDB Service Instances on Atlas", "complete" : true }
+{ "title" : "Connect to MongoDB Service Instance", "complete" : true }
+```
+
+## That's a wrap
+
+That's a wrap folks...We're literally just scratching the surface but hopefully you can see how useful the combo of Atlas and K8s can be.  Even with this Playskool example we were able to automate MongoDB provisioning across Cloud Providers which without Atlas would be no small task.  
+
+Atlas is machinable MongoDB goodness...keep calm and Mongo On :sunglasses:.
 
 ## Uninstall
 
-Save a tree...run `./uninstall.sh` to delete all Service Instances, remove the Atlas OSB and Service Catalog.
+Save a :evergreen_tree:...run `./uninstall.sh` to delete all Service Instances, remove the Atlas OSB and Service Catalog.
 
 ## Downloads
 
