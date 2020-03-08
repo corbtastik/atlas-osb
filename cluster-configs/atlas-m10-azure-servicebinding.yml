@@ -1,8 +1,8 @@
 apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ServiceBinding
 metadata:
-  name: atlas-user1
+  name: atlas-m10-azure-user1
   namespace: atlas
 spec:
   instanceRef:
-    name: atlas-m10-aws
+    name: atlas-m10-azure
