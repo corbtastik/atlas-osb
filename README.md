@@ -132,7 +132,7 @@ Make sure to configure each Service Instance with valid config from `svcat marke
 * [GCP](https://docs.atlas.mongodb.com/reference/google-gcp/)
 * [Azure](https://docs.atlas.mongodb.com/reference/microsoft-azure/)
 
-The full list of supported cluster properties is given in the [Create Cluster request body of the Atlas API](https://docs.atlas.mongodb.com/reference/api/clusters-create-one/#request-body-parameters).
+For this sample we're keeping the cluster configs pretty basic, the full list of supported cluster properties is given in the [Create Cluster request body of the Atlas API](https://docs.atlas.mongodb.com/reference/api/clusters-create-one/#request-body-parameters).
 
 Sample Service Instance deployment.
 
@@ -153,7 +153,7 @@ spec:
         regionName: CENTRAL_US
 ```
 
-Deploy each Service Instance and kickback with a snack :candy: for several minutes while Atlas brings our clusters online.
+Deploy each Service Instance and kickback with a snack :doughnut: for several minutes while Atlas brings our clusters online.
 
 ```bash
 kubectl apply -f cluster-configs/atlas-m10-aws.yml
@@ -175,13 +175,44 @@ kubectl -n atlas describe serviceinstances
 
 ## Connect to MongoDB Service Instance
 
-At this point you should have 3 M10(s) running and now it's time to connect via a Service Binding.
+At this point you should have 3 M10(s) running and now it's time to connect via a Service Binding.  In order to do that we need to perform the following steps.
 
-For convenience there's an sample ServiceBinding `atlas-servicebinding.yml` for the M10 AWS Service Instance, pre-configured with Service Instance user `atlas_user1`.
+1. Create Service Bindings for each cluster user
+1. Retrieve the Atlas connection deets for each user
+1. Connect to the MongoDB cluster with the mongo shell, Compass or an app
 
-## TODO - Work-in-progress
+For convenience there's sample ServiceBindings in `./cluster-configs` for each M10 Service Instance, pre-configured with a Service Instance user...for example `atlas-m10-aws-user1`.
 
-Pick up here :truck:
+```bash
+kubectl apply -f ./cluster-configs/atlas-m10-aws-servicebinding.yml
+kubectl apply -f ./cluster-configs/atlas-m10-azure-servicebinding.yml
+kubectl apply -f ./cluster-configs/atlas-m10-gcp-servicebinding.yml
+
+# view service bindings with kubectl
+kubectl -n atlas get servicebindings
+kubectl -n atlas describe servicebindings
+
+# view details of service bindings with svcat, notice "Secret Data"
+svcat describe binding atlas-m10-gcp-user1 -n atlas
+```
+
+Each Service Binding includes a [base64 encoded Kubernetes Secret](https://kubernetes.io/docs/concepts/configuration/secret/) containing the Cluster uri, username and password.  You can view the encoded secret using kubectl.
+
+```bash
+kubectl get secret atlas-m10-gcp-user1 -n atlas -o yaml
+
+apiVersion: v1
+data:
+  password: TzAxVXcxUGRpMlFUOUlaMTNjRFV3THJKdXd2UzJGeWJwazBKV2tCNWJkVT0=
+  uri: bW9uZ29kYitzcnY6Ly9hZGExNjA4Ny02MTUzLTExZWEtOWY4OC1uZWdhZS5nY3AubW9uZ29kYi5uZXQ=
+  username: NTAwMGZkMTktNjE1OC0xMWVhLTlmODgtMDI0MmFjMTEwMDA1
+kind: Secret
+metadata:
+  name: atlas-m10-gcp-user1
+  namespace: atlas
+type: Opaque
+```
+
 
 ## Uninstall
 
