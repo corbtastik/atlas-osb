@@ -1,6 +1,6 @@
 # Atlas OSB and MongoDB
 
-Do you like cloud-native automation (*I know you do, you devOps diva*)? Bespoke processes and manual provisioning gotcha a little melancholy?  Well turn that frown upside down buttercup, things are looking up :sunny:
+Do you like cloud-native automation? (*I know you do, you devOps diva.*) Bespoke processes and manual provisioning gotcha a little melancholy?  Well turn that frown upside down buttercup, things are looking up :sunny:
 
 In this sample we'll take a looksy at machining MongoDB clusters with the [Atlas Open Service Broker](https://github.com/mongodb/mongodb-atlas-service-broker) on Kubernetes.  This is one of three ways to integrate with MongoDB [Atlas](https://www.mongodb.com/cloud/atlas) to automate managing Clusters.  The other two are [Terraform](https://www.terraform.io/docs/providers/mongodbatlas/index.html) and the native [Atlas API](https://docs.atlas.mongodb.com/api/).  We'll grok those in another post on-down the road.
 
@@ -40,6 +40,8 @@ minikube start --vm-driver=virtualbox \
 
 Our K8s Cluster needs a Service Catalog installed so we can thumb through it for MongoDB Atlas plans in a bit.  Run the commands below to install a Service Catalog using Helm...note we're deploying it into the catalog namespace.
 
+[Service Catalog install docs](https://kubernetes.io/docs/tasks/service-catalog/install-service-catalog-using-helm/)
+
 ```bash
 # service catalog
 kubectl create ns catalog
@@ -52,7 +54,7 @@ helm install catalog svc-cat/catalog --namespace catalog
 Ok let's get a bit of manual config taken care of.  Head over to Atlas and generate an API Key for the Atlas Service Broker to use.
 
 * Atlas > Project > Access Management > API Key
-* Whitelist your IP on the API Key (on full K8s whitelist worker nodes)
+* Whitelist your IP on the API Key (on full K8s whitelist each worker node)
 * Your ProjectId is @ Atlas > Project > Settings
 * Configure the `PRIVATE-KEY`, `PUBLIC-KEY` and `PROJECT-ID` in `atlas-apikey.yml`.
 
@@ -71,7 +73,7 @@ stringData:
   password: PRIVATE-KEY           #replace
 ```
 
-Once that's in-place we're cooking with corn oil :corn:...that's just corny.
+Once that's in-place we're cooking with corn oil :corn:...(hey that's just corny).
 
 ## Deploy Atlas OSB
 
@@ -124,12 +126,11 @@ Make sure to configure each Service Instance with valid config from `svcat marke
 * `serviceClassExternalName` - mongodb-atlas-aws...gpc, azure
 * `servicePlanExternalName` - atlas plan name, M10...etc.
 
-**Note:** Atlas regionName(s) are named different than public cloud providers.
+**Note:** Atlas regionName(s) are named different than public cloud providers, use the links below to get correct regionNames.
 
-* Mappings
-  * [AWS](https://docs.atlas.mongodb.com/reference/amazon-aws/)
-  * [GCP](https://docs.atlas.mongodb.com/reference/google-gcp/)
-  * [Azure](https://docs.atlas.mongodb.com/reference/microsoft-azure/)
+* [AWS](https://docs.atlas.mongodb.com/reference/amazon-aws/)
+* [GCP](https://docs.atlas.mongodb.com/reference/google-gcp/)
+* [Azure](https://docs.atlas.mongodb.com/reference/microsoft-azure/)
 
 The full list of supported cluster properties is given in the [Create Cluster request body of the Atlas API](https://docs.atlas.mongodb.com/reference/api/clusters-create-one/#request-body-parameters).
 
