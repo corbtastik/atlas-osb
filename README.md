@@ -126,7 +126,7 @@ Make sure to configure each Service Instance with valid config from `svcat marke
 * `serviceClassExternalName` - mongodb-atlas-aws...gpc, azure
 * `servicePlanExternalName` - atlas plan name, M10...etc.
 
-**Note:** Atlas regionName(s) are named different than public cloud providers, use the links below to get correct regionNames.
+**Note:** Atlas regionName(s) are named different than public cloud providers, use the links below to get correct names.
 
 * [AWS](https://docs.atlas.mongodb.com/reference/amazon-aws/)
 * [GCP](https://docs.atlas.mongodb.com/reference/google-gcp/)
